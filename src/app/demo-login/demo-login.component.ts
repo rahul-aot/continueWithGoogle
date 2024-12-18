@@ -1,8 +1,9 @@
 declare const google: any;
 
 import { GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -13,16 +14,38 @@ import { BrowserModule } from '@angular/platform-browser';
 })
 export class DemoLoginComponent implements OnInit {
 
+  private router= inject(Router)
+
   constructor(private authService: SocialAuthService) { }
 
   ngOnInit(): void {
-    console.log('DemoLoginComponent initialized');
+    google.accounts.id.initialize({
+      client_id: '92038547519-re3sma2872pk5vouoetjh9psshe4vb2n.apps.googleusercontent.com',
+      callback: (response: any) => {
+        this.handleLogin(response);
+      }});
+      google.accounts.id.renderButton(document.getElementById('google-btn'),{
+      theme: 'filled_blue',
+      size: 'large',
+      shape: 'rectangle',
+      type: 'standard',
+      width: '300',
+      text: 'Login with Google'
+    });
   }
 
-  refreshToken(): void {
-    this.authService.refreshAuthToken(GoogleLoginProvider.PROVIDER_ID)
-      .then(() => console.log('Token refreshed successfully'))
-      .catch(err => console.error('Error refreshing token', err));
+  private decodeToken(token: string) {
+    return JSON.parse(atob(token.split('.')[1]));
   }
+
+  handleLogin(response: any) {
+    if(response) {
+      //decoding for now 
+      const payLoad = this.decodeToken(response.credential);
+      sessionStorage.setItem('loggedInUser', JSON.stringify(payLoad));
+      this.router.navigate(['home']);
+  }
+
+}
 
 }
