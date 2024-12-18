@@ -1,0 +1,17 @@
+#google-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 300px;
+    text-align: center;
+    height: 56px;
+    &:hover {
+        background-color: darkgray;
+      }
+}
